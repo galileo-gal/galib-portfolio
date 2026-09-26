@@ -1,3 +1,5 @@
+import GithubStats from "../../components/GithubStats";
+
 export const metadata = { title: "About — Galib" };
 
 export default function AboutPage() {
@@ -25,6 +27,11 @@ export default function AboutPage() {
           I currently chair the IEEE NSU Student Branch, having come up through Treasurer
           and Vice Chair roles, and run Galileo&apos;s Pen, a tutoring initiative.
         </p>
+      </div>
+
+      <div className="mt-14 max-w-prose">
+        <p className="font-mono text-sm text-mark mb-4">Live from GitHub</p>
+        <GithubStats />
       </div>
 
       <div className="mt-12 font-mono text-sm">

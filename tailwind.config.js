@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: "class",
   content: [
     "./app/**/*.{js,jsx}",
     "./components/**/*.{js,jsx}",
@@ -8,13 +9,13 @@ module.exports = {
     extend: {
       colors: {
         ink: {
-          DEFAULT: "#12151B",
-          soft: "#1B2029",
-          line: "#2A303C",
+          DEFAULT: "var(--color-bg)",
+          soft: "var(--color-surface)",
+          line: "var(--color-line)",
         },
-        paper: "#EFEBE2",
-        mark: "#C9A227",
-        muted: "#8A8F9B",
+        paper: "var(--color-fg)",
+        mark: "var(--color-mark)",
+        muted: "var(--color-muted)",
       },
       fontFamily: {
         serif: ["'Fraunces'", "ui-serif", "Georgia", "serif"],

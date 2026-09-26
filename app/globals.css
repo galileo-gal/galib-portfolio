@@ -4,18 +4,37 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-bg: #EFEBE2;
+  --color-surface: #E3DFD4;
+  --color-line: #D3CCBB;
+  --color-fg: #12151B;
+  --color-mark: #9C7112;
+  --color-muted: #6B6F7A;
+}
+
+.dark {
+  --color-bg: #12151B;
+  --color-surface: #1B2029;
+  --color-line: #2A303C;
+  --color-fg: #EFEBE2;
+  --color-mark: #C9A227;
+  --color-muted: #8A8F9B;
+}
+
 html {
   scroll-behavior: smooth;
 }
 
 body {
-  background-color: #12151B;
-  color: #EFEBE2;
+  background-color: var(--color-bg);
+  color: var(--color-fg);
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 ::selection {
-  background-color: #C9A227;
-  color: #12151B;
+  background-color: var(--color-mark);
+  color: var(--color-bg);
 }
 
 a:focus-visible,
