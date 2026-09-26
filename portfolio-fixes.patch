@@ -1,0 +1,449 @@
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+index 0000000..892067b
+--- /dev/null
++++ b/.gitignore
+@@ -0,0 +1,33 @@
++# dependencies
++/node_modules
++/.pnp
++.pnp.js
++
++# testing
++/coverage
++
++# next.js
++/.next/
++/out/
++
++# production
++/build
++
++# misc
++.DS_Store
++*.pem
++
++# debug
++npm-debug.log*
++yarn-debug.log*
++yarn-error.log*
++
++# local env files
++.env*.local
++
++# vercel
++.vercel
++
++# typescript
++*.tsbuildinfo
++next-env.d.ts
+diff --git a/app/globals.css b/app/globals.css
+index 9ed85cb..c8dbe99 100644
+--- a/app/globals.css
++++ b/app/globals.css
+@@ -1,5 +1,3 @@
+-@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Mono:wght@400;500&display=swap");
+-
+ @tailwind base;
+ @tailwind components;
+ @tailwind utilities;
+diff --git a/app/icon.js b/app/icon.js
+new file mode 100644
+index 0000000..80ecc18
+--- /dev/null
++++ b/app/icon.js
+@@ -0,0 +1,27 @@
++import { ImageResponse } from "next/og";
++
++export const size = { width: 32, height: 32 };
++export const contentType = "image/png";
++
++export default function Icon() {
++  return new ImageResponse(
++    (
++      <div
++        style={{
++          fontSize: 22,
++          background: "#12151B",
++          width: "100%",
++          height: "100%",
++          display: "flex",
++          alignItems: "center",
++          justifyContent: "center",
++          color: "#C9A227",
++          fontWeight: 600,
++        }}
++      >
++        G
++      </div>
++    ),
++    { ...size }
++  );
++}
+diff --git a/app/layout.js b/app/layout.js
+index 226bdc7..0926645 100644
+--- a/app/layout.js
++++ b/app/layout.js
+@@ -1,15 +1,48 @@
++import { Fraunces, IBM_Plex_Mono } from "next/font/google";
+ import "./globals.css";
+ import Nav from "../components/Nav";
+ import Footer from "../components/Footer";
+ 
++const fraunces = Fraunces({
++  subsets: ["latin"],
++  style: ["normal", "italic"],
++  variable: "--font-serif",
++  display: "swap",
++});
++
++const ibmPlexMono = IBM_Plex_Mono({
++  subsets: ["latin"],
++  weight: ["400", "500"],
++  variable: "--font-mono",
++  display: "swap",
++});
++
++// TODO: switch to https://galib.is-a.dev once the domain PR is merged and DNS resolves.
++const siteUrl = "https://galib-portfolio-taupe.vercel.app";
++const title = "Galib — Portfolio";
++const description = "Data engineering, applied ML, and systems work by Galib.";
++
+ export const metadata = {
+-  title: "Galib — Portfolio",
+-  description: "Data engineering, applied ML, and systems work by Galib.",
++  metadataBase: new URL(siteUrl),
++  title: { default: title, template: "%s" },
++  description,
++  openGraph: {
++    title,
++    description,
++    url: siteUrl,
++    siteName: title,
++    type: "website",
++  },
++  twitter: {
++    card: "summary_large_image",
++    title,
++    description,
++  },
+ };
+ 
+ export default function RootLayout({ children }) {
+   return (
+-    <html lang="en">
++    <html lang="en" className={`${fraunces.variable} ${ibmPlexMono.variable}`}>
+       <body className="min-h-screen flex flex-col font-sans antialiased">
+         <Nav />
+         <main className="flex-1">{children}</main>
+diff --git a/app/not-found.js b/app/not-found.js
+new file mode 100644
+index 0000000..57dbc97
+--- /dev/null
++++ b/app/not-found.js
+@@ -0,0 +1,19 @@
++import Link from "next/link";
++
++export default function NotFound() {
++  return (
++    <div className="max-w-5xl mx-auto px-6 py-24 text-center">
++      <p className="font-mono text-sm text-mark mb-4">404</p>
++      <h1 className="font-serif text-4xl text-paper mb-6">Page not found</h1>
++      <p className="max-w-prose mx-auto text-muted leading-relaxed mb-10">
++        Whatever you were looking for isn&apos;t here. It may have moved, or the link may be wrong.
++      </p>
++      <Link
++        href="/"
++        className="border border-mark text-mark px-5 py-2.5 hover:bg-mark hover:text-ink transition-colors inline-block font-mono text-sm"
++      >
++        Back home
++      </Link>
++    </div>
++  );
++}
+diff --git a/app/opengraph-image.js b/app/opengraph-image.js
+new file mode 100644
+index 0000000..67da12a
+--- /dev/null
++++ b/app/opengraph-image.js
+@@ -0,0 +1,31 @@
++import { ImageResponse } from "next/og";
++
++export const size = { width: 1200, height: 630 };
++export const contentType = "image/png";
++
++export default function OGImage() {
++  return new ImageResponse(
++    (
++      <div
++        style={{
++          width: "100%",
++          height: "100%",
++          display: "flex",
++          flexDirection: "column",
++          justifyContent: "center",
++          padding: "80px",
++          background: "#12151B",
++          color: "#EFEBE2",
++        }}
++      >
++        <div style={{ fontSize: 28, color: "#C9A227", fontFamily: "monospace", marginBottom: 24 }}>
++          Data &amp; ML Engineering
++        </div>
++        <div style={{ fontSize: 60, lineHeight: 1.15, maxWidth: 980 }}>
++          Galib — systems that turn messy, real-world data into decisions.
++        </div>
++      </div>
++    ),
++    { ...size }
++  );
++}
+diff --git a/app/robots.js b/app/robots.js
+new file mode 100644
+index 0000000..71927c1
+--- /dev/null
++++ b/app/robots.js
+@@ -0,0 +1,9 @@
++// TODO: switch to https://galib.is-a.dev once the domain PR is merged and DNS resolves.
++const siteUrl = "https://galib-portfolio-taupe.vercel.app";
++
++export default function robots() {
++  return {
++    rules: { userAgent: "*", allow: "/" },
++    sitemap: `${siteUrl}/sitemap.xml`,
++  };
++}
+diff --git a/app/sitemap.js b/app/sitemap.js
+new file mode 100644
+index 0000000..37c8f34
+--- /dev/null
++++ b/app/sitemap.js
+@@ -0,0 +1,18 @@
++import { projects } from "../lib/projects";
++
++// TODO: switch to https://galib.is-a.dev once the domain PR is merged and DNS resolves.
++const siteUrl = "https://galib-portfolio-taupe.vercel.app";
++
++export default function sitemap() {
++  const staticRoutes = ["", "/about", "/certifications", "/projects"].map((route) => ({
++    url: `${siteUrl}${route}`,
++    lastModified: new Date(),
++  }));
++
++  const projectRoutes = projects.map((p) => ({
++    url: `${siteUrl}/projects/${p.slug}`,
++    lastModified: new Date(),
++  }));
++
++  return [...staticRoutes, ...projectRoutes];
++}
+diff --git a/package-lock.json b/package-lock.json
+index 30136c4..b326131 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -8,7 +8,7 @@
+       "name": "galib-portfolio",
+       "version": "1.0.0",
+       "dependencies": {
+-        "next": "14.2.5",
++        "next": "14.2.34",
+         "react": "^18",
+         "react-dom": "^18"
+       },
+@@ -71,15 +71,15 @@
+       }
+     },
+     "node_modules/@next/env": {
+-      "version": "14.2.5",
+-      "resolved": "https://registry.npmjs.org/@next/env/-/env-14.2.5.tgz",
+-      "integrity": "sha512-/zZGkrTOsraVfYjGP8uM0p6r0BDT6xWpkjdVbcz66PJVSpwXX3yNiRycxAuDfBKGWBrZBXRuK/YVlkNgxHGwmA==",
++      "version": "14.2.34",
++      "resolved": "https://registry.npmjs.org/@next/env/-/env-14.2.34.tgz",
++      "integrity": "sha512-iuGW/UM+EZbn2dm+aLx+avo1rVap+ASoFr7oLpTBVW2G2DqhD5l8Fme9IsLZ6TTsp0ozVSFswidiHK1NGNO+pg==",
+       "license": "MIT"
+     },
+     "node_modules/@next/swc-darwin-arm64": {
+-      "version": "14.2.5",
+-      "resolved": "https://registry.npmjs.org/@next/swc-darwin-arm64/-/swc-darwin-arm64-14.2.5.tgz",
+-      "integrity": "sha512-/9zVxJ+K9lrzSGli1///ujyRfon/ZneeZ+v4ptpiPoOU+GKZnm8Wj8ELWU1Pm7GHltYRBklmXMTUqM/DqQ99FQ==",
++      "version": "14.2.33",
++      "resolved": "https://registry.npmjs.org/@next/swc-darwin-arm64/-/swc-darwin-arm64-14.2.33.tgz",
++      "integrity": "sha512-HqYnb6pxlsshoSTubdXKu15g3iivcbsMXg4bYpjL2iS/V6aQot+iyF4BUc2qA/J/n55YtvE4PHMKWBKGCF/+wA==",
+       "cpu": [
+         "arm64"
+       ],
+@@ -93,9 +93,9 @@
+       }
+     },
+     "node_modules/@next/swc-darwin-x64": {
+-      "version": "14.2.5",
+-      "resolved": "https://registry.npmjs.org/@next/swc-darwin-x64/-/swc-darwin-x64-14.2.5.tgz",
+-      "integrity": "sha512-vXHOPCwfDe9qLDuq7U1OYM2wUY+KQ4Ex6ozwsKxp26BlJ6XXbHleOUldenM67JRyBfVjv371oneEvYd3H2gNSA==",
++      "version": "14.2.33",
++      "resolved": "https://registry.npmjs.org/@next/swc-darwin-x64/-/swc-darwin-x64-14.2.33.tgz",
++      "integrity": "sha512-8HGBeAE5rX3jzKvF593XTTFg3gxeU4f+UWnswa6JPhzaR6+zblO5+fjltJWIZc4aUalqTclvN2QtTC37LxvZAA==",
+       "cpu": [
+         "x64"
+       ],
+@@ -109,9 +109,9 @@
+       }
+     },
+     "node_modules/@next/swc-linux-arm64-gnu": {
+-      "version": "14.2.5",
+-      "resolved": "https://registry.npmjs.org/@next/swc-linux-arm64-gnu/-/swc-linux-arm64-gnu-14.2.5.tgz",
+-      "integrity": "sha512-vlhB8wI+lj8q1ExFW8lbWutA4M2ZazQNvMWuEDqZcuJJc78iUnLdPPunBPX8rC4IgT6lIx/adB+Cwrl99MzNaA==",
++      "version": "14.2.33",
++      "resolved": "https://registry.npmjs.org/@next/swc-linux-arm64-gnu/-/swc-linux-arm64-gnu-14.2.33.tgz",
++      "integrity": "sha512-JXMBka6lNNmqbkvcTtaX8Gu5by9547bukHQvPoLe9VRBx1gHwzf5tdt4AaezW85HAB3pikcvyqBToRTDA4DeLw==",
+       "cpu": [
+         "arm64"
+       ],
+@@ -125,9 +125,9 @@
+       }
+     },
+     "node_modules/@next/swc-linux-arm64-musl": {
+-      "version": "14.2.5",
+-      "resolved": "https://registry.npmjs.org/@next/swc-linux-arm64-musl/-/swc-linux-arm64-musl-14.2.5.tgz",
+-      "integrity": "sha512-NpDB9NUR2t0hXzJJwQSGu1IAOYybsfeB+LxpGsXrRIb7QOrYmidJz3shzY8cM6+rO4Aojuef0N/PEaX18pi9OA==",
++      "version": "14.2.33",
++      "resolved": "https://registry.npmjs.org/@next/swc-linux-arm64-musl/-/swc-linux-arm64-musl-14.2.33.tgz",
++      "integrity": "sha512-Bm+QulsAItD/x6Ih8wGIMfRJy4G73tu1HJsrccPW6AfqdZd0Sfm5Imhgkgq2+kly065rYMnCOxTBvmvFY1BKfg==",
+       "cpu": [
+         "arm64"
+       ],
+@@ -141,9 +141,9 @@
+       }
+     },
+     "node_modules/@next/swc-linux-x64-gnu": {
+-      "version": "14.2.5",
+-      "resolved": "https://registry.npmjs.org/@next/swc-linux-x64-gnu/-/swc-linux-x64-gnu-14.2.5.tgz",
+-      "integrity": "sha512-8XFikMSxWleYNryWIjiCX+gU201YS+erTUidKdyOVYi5qUQo/gRxv/3N1oZFCgqpesN6FPeqGM72Zve+nReVXQ==",
++      "version": "14.2.33",
++      "resolved": "https://registry.npmjs.org/@next/swc-linux-x64-gnu/-/swc-linux-x64-gnu-14.2.33.tgz",
++      "integrity": "sha512-FnFn+ZBgsVMbGDsTqo8zsnRzydvsGV8vfiWwUo1LD8FTmPTdV+otGSWKc4LJec0oSexFnCYVO4hX8P8qQKaSlg==",
+       "cpu": [
+         "x64"
+       ],
+@@ -157,9 +157,9 @@
+       }
+     },
+     "node_modules/@next/swc-linux-x64-musl": {
+-      "version": "14.2.5",
+-      "resolved": "https://registry.npmjs.org/@next/swc-linux-x64-musl/-/swc-linux-x64-musl-14.2.5.tgz",
+-      "integrity": "sha512-6QLwi7RaYiQDcRDSU/os40r5o06b5ue7Jsk5JgdRBGGp8l37RZEh9JsLSM8QF0YDsgcosSeHjglgqi25+m04IQ==",
++      "version": "14.2.33",
++      "resolved": "https://registry.npmjs.org/@next/swc-linux-x64-musl/-/swc-linux-x64-musl-14.2.33.tgz",
++      "integrity": "sha512-345tsIWMzoXaQndUTDv1qypDRiebFxGYx9pYkhwY4hBRaOLt8UGfiWKr9FSSHs25dFIf8ZqIFaPdy5MljdoawA==",
+       "cpu": [
+         "x64"
+       ],
+@@ -173,9 +173,9 @@
+       }
+     },
+     "node_modules/@next/swc-win32-arm64-msvc": {
+-      "version": "14.2.5",
+-      "resolved": "https://registry.npmjs.org/@next/swc-win32-arm64-msvc/-/swc-win32-arm64-msvc-14.2.5.tgz",
+-      "integrity": "sha512-1GpG2VhbspO+aYoMOQPQiqc/tG3LzmsdBH0LhnDS3JrtDx2QmzXe0B6mSZZiN3Bq7IOMXxv1nlsjzoS1+9mzZw==",
++      "version": "14.2.33",
++      "resolved": "https://registry.npmjs.org/@next/swc-win32-arm64-msvc/-/swc-win32-arm64-msvc-14.2.33.tgz",
++      "integrity": "sha512-nscpt0G6UCTkrT2ppnJnFsYbPDQwmum4GNXYTeoTIdsmMydSKFz9Iny2jpaRupTb+Wl298+Rh82WKzt9LCcqSQ==",
+       "cpu": [
+         "arm64"
+       ],
+@@ -189,9 +189,9 @@
+       }
+     },
+     "node_modules/@next/swc-win32-ia32-msvc": {
+-      "version": "14.2.5",
+-      "resolved": "https://registry.npmjs.org/@next/swc-win32-ia32-msvc/-/swc-win32-ia32-msvc-14.2.5.tgz",
+-      "integrity": "sha512-Igh9ZlxwvCDsu6438FXlQTHlRno4gFpJzqPjSIBZooD22tKeI4fE/YMRoHVJHmrQ2P5YL1DoZ0qaOKkbeFWeMg==",
++      "version": "14.2.33",
++      "resolved": "https://registry.npmjs.org/@next/swc-win32-ia32-msvc/-/swc-win32-ia32-msvc-14.2.33.tgz",
++      "integrity": "sha512-pc9LpGNKhJ0dXQhZ5QMmYxtARwwmWLpeocFmVG5Z0DzWq5Uf0izcI8tLc+qOpqxO1PWqZ5A7J1blrUIKrIFc7Q==",
+       "cpu": [
+         "ia32"
+       ],
+@@ -205,9 +205,9 @@
+       }
+     },
+     "node_modules/@next/swc-win32-x64-msvc": {
+-      "version": "14.2.5",
+-      "resolved": "https://registry.npmjs.org/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-14.2.5.tgz",
+-      "integrity": "sha512-tEQ7oinq1/CjSG9uSTerca3v4AZ+dFa+4Yu6ihaG8Ud8ddqLQgFGcnwYls13H5X5CPDPZJdYxyeMui6muOLd4g==",
++      "version": "14.2.33",
++      "resolved": "https://registry.npmjs.org/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-14.2.33.tgz",
++      "integrity": "sha512-nOjfZMy8B94MdisuzZo9/57xuFVLHJaDj5e/xrduJp9CV2/HrfxTRH2fbyLe+K9QT41WBLUd4iXX3R7jBp0EUg==",
+       "cpu": [
+         "x64"
+       ],
+@@ -850,13 +850,13 @@
+       }
+     },
+     "node_modules/next": {
+-      "version": "14.2.5",
+-      "resolved": "https://registry.npmjs.org/next/-/next-14.2.5.tgz",
+-      "integrity": "sha512-0f8aRfBVL+mpzfBjYfQuLWh2WyAwtJXCRfkPF4UJ5qd2YwrHczsrSzXU4tRMV0OAxR8ZJZWPFn6uhSC56UTsLA==",
++      "version": "14.2.34",
++      "resolved": "https://registry.npmjs.org/next/-/next-14.2.34.tgz",
++      "integrity": "sha512-s7mRraWlkEVRLjHHdu5khn0bSnmUh+U+YtigBc+t2Ge7jJHFIVBZna+W9Jcx7b04HhM7eJWrNJ2A+sQs9gJ3eg==",
+       "deprecated": "This version has a security vulnerability. Please upgrade to a patched version. See https://nextjs.org/blog/security-update-2025-12-11 for more details.",
+       "license": "MIT",
+       "dependencies": {
+-        "@next/env": "14.2.5",
++        "@next/env": "14.2.34",
+         "@swc/helpers": "0.5.5",
+         "busboy": "1.6.0",
+         "caniuse-lite": "^1.0.30001579",
+@@ -871,15 +871,15 @@
+         "node": ">=18.17.0"
+       },
+       "optionalDependencies": {
+-        "@next/swc-darwin-arm64": "14.2.5",
+-        "@next/swc-darwin-x64": "14.2.5",
+-        "@next/swc-linux-arm64-gnu": "14.2.5",
+-        "@next/swc-linux-arm64-musl": "14.2.5",
+-        "@next/swc-linux-x64-gnu": "14.2.5",
+-        "@next/swc-linux-x64-musl": "14.2.5",
+-        "@next/swc-win32-arm64-msvc": "14.2.5",
+-        "@next/swc-win32-ia32-msvc": "14.2.5",
+-        "@next/swc-win32-x64-msvc": "14.2.5"
++        "@next/swc-darwin-arm64": "14.2.33",
++        "@next/swc-darwin-x64": "14.2.33",
++        "@next/swc-linux-arm64-gnu": "14.2.33",
++        "@next/swc-linux-arm64-musl": "14.2.33",
++        "@next/swc-linux-x64-gnu": "14.2.33",
++        "@next/swc-linux-x64-musl": "14.2.33",
++        "@next/swc-win32-arm64-msvc": "14.2.33",
++        "@next/swc-win32-ia32-msvc": "14.2.33",
++        "@next/swc-win32-x64-msvc": "14.2.33"
+       },
+       "peerDependencies": {
+         "@opentelemetry/api": "^1.1.0",
+diff --git a/package.json b/package.json
+index 1861724..b48ea08 100644
+--- a/package.json
++++ b/package.json
+@@ -9,7 +9,7 @@
+     "lint": "next lint"
+   },
+   "dependencies": {
+-    "next": "14.2.5",
++    "next": "14.2.34",
+     "react": "^18",
+     "react-dom": "^18"
+   },
+diff --git a/tailwind.config.js b/tailwind.config.js
+index 4fd53f0..4f1b775 100644
+--- a/tailwind.config.js
++++ b/tailwind.config.js
+@@ -17,8 +17,8 @@ module.exports = {
+         muted: "#8A8F9B",
+       },
+       fontFamily: {
+-        serif: ["'Fraunces'", "ui-serif", "Georgia", "serif"],
+-        mono: ["'IBM Plex Mono'", "ui-monospace", "SFMono-Regular", "monospace"],
++        serif: ["var(--font-serif)", "ui-serif", "Georgia", "serif"],
++        mono: ["var(--font-mono)", "ui-monospace", "SFMono-Regular", "monospace"],
+       },
+       maxWidth: {
+         prose: "72ch",
